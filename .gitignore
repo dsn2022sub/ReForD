@@ -1,0 +1,17 @@
+# IDE conf
+.idea/
+
+# python
+venv/
+__pycache__/
+
+# test
+test.py
+
+# all data
+# raw data
+data/
+# dataset-specified data
+*-data/
+# sketch
+evaluators/**/*-sketch-*/

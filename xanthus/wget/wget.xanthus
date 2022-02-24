@@ -1,0 +1,224 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby
+
+Xanthus.configure do |config|
+  config.name = 'wget'
+  config.authors = 'Yilun Sun'
+  config.affiliation = 'TsingHua University'
+  config.email = 'yilunsun.se@gmail.com'
+  config.description = "Unicorn's SC-1 experiment."
+  config.seed = 148880941637144106481034814556217324021
+
+  config.script :pre do
+    %q{%{
+      sudo stap -e 'probe syscall.* {if(execname() == "wget") {printf("%d, %s %s %s[%s](%s)", gettimeofday_us(), fullpath_struct_path(task_cwd_path(task_current())), thread_indent(-1), name, probefunc(), argstr);}}probe syscall.*.return {if(execname() == "wget") {printf(" -> %s\\\\n", retstr);}}' -F -o /tmp/stap.log -v
+      mkdir wgets
+      cd wgets
+      sleep 5
+    }}
+  end
+
+  config.script :camflow_start do
+    Xanthus::CAMFLOW_START
+  end
+
+  config.script :normal do
+    %q{%{
+      wget https://mirrors.tuna.tsinghua.edu.cn/ubuntu/pool/universe/f/fonts-adf/fonts-adf-accanthis_0.20110505-1_all.deb
+      sudo dpkg -i fonts-adf-accanthis_0.20110505-1_all.deb
+      rm fonts-adf-accanthis_0.20110505-1_all.deb
+      sleep 5
+      wget https://mirrors.tuna.tsinghua.edu.cn/ubuntu/pool/main/j/java-common/java-common_0.63ubuntu1~02_all.deb
+      sudo dpkg -i java-common_0.63ubuntu1~02_all.deb
+      rm java-common_0.63ubuntu1~02_all.deb
+      sleep 8
+      wget https://mirrors.tuna.tsinghua.edu.cn/ubuntu/pool/universe/a/arc/arc_5.21q-5_amd64.deb
+      sudo dpkg -i arc_5.21q-5_amd64.deb
+      rm arc_5.21q-5_amd64.deb
+      sleep 3
+      wget https://mirrors.tuna.tsinghua.edu.cn/ubuntu/pool/universe/s/sx/sx_2.0+ds-4build2_amd64.deb
+      sudo dpkg -i sx_2.0+ds-4build2_amd64.deb
+      rm sx_2.0+ds-4build2_amd64.deb
+      sleep 12
+      wget https://mirrors.tuna.tsinghua.edu.cn/ubuntu/pool/universe/e/edb/edb_1.31-3_all.deb
+      sudo dpkg -i edb_1.31-3_all.deb
+      rm edb_1.31-3_all.deb
+      sleep 7
+      wget https://mirrors.tuna.tsinghua.edu.cn/ubuntu/pool/universe/c/carmetal/carmetal_3.5.2+dfsg-1.1_all.deb
+      sudo dpkg -i carmetal_3.5.2+dfsg-1.1_all.deb
+      rm carmetal_3.5.2+dfsg-1.1_all.deb
+      sleep 10
+      wget https://mirrors.tuna.tsinghua.edu.cn/ubuntu/pool/universe/s/spl-linux/spl_0.7.5-1ubuntu2_amd64.deb
+      sudo dpkg -i spl_0.7.5-1ubuntu2_amd64.deb
+      rm spl_0.7.5-1ubuntu2_amd64.deb
+      sleep 7
+      wget https://mirrors.tuna.tsinghua.edu.cn/ubuntu/pool/universe/a/aurora/aurora_1.9.3-0ubuntu1_amd64.deb
+      sudo dpkg -i aurora_1.9.3-0ubuntu1_amd64.deb
+      rm aurora_1.9.3-0ubuntu1_amd64.deb
+      sleep 1
+      wget https://mirrors.tuna.tsinghua.edu.cn/ubuntu/pool/universe/j/jzmq/libzmq-java_3.1.0-10_amd64.deb
+      sudo dpkg -i libzmq-java_3.1.0-10_amd64.deb
+      rm libzmq-java_3.1.0-10_amd64.deb
+      sleep 6
+      wget https://gitee.com/sunwenzaizhi/ipscan/attach_files/585071/download/ipscan_3.5.5_amd64.deb
+      sudo dpkg -i ipscan_3.5.5_amd64.deb
+      rm ipscan_3.5.5_amd64.deb
+      sleep 4
+      wget https://mirrors.tuna.tsinghua.edu.cn/ubuntu/pool/universe/x/xmlto/xmlto_0.0.28-2_amd64.deb
+      sudo dpkg -i xmlto_0.0.28-2_amd64.deb
+      rm xmlto_0.0.28-2_amd64.deb
+      sleep 16
+      wget https://mirrors.tuna.tsinghua.edu.cn/ubuntu/pool/universe/p/plexus-languages/libplexus-languages-java_0.9.5-2_all.deb
+      sudo dpkg -i libplexus-languages-java_0.9.5-2_all.deb
+      rm libplexus-languages-java_0.9.5-2_all.deb
+      sleep 1
+      wget https://mirrors.tuna.tsinghua.edu.cn/ubuntu/pool/universe/z/zathura-pdf-poppler/zathura-pdf-poppler_0.2.8-1_amd64.deb
+      sudo dpkg -i zathura-pdf-poppler_0.2.8-1_amd64.deb
+      rm zathura-pdf-poppler_0.2.8-1_amd64.deb
+      sleep 7
+      wget https://mirrors.tuna.tsinghua.edu.cn/ubuntu/pool/universe/f/fasd/fasd_1.0.1-1_all.deb
+      sudo dpkg -i fasd_1.0.1-1_all.deb
+      rm fasd_1.0.1-1_all.deb
+      sleep 7
+    }}
+  end
+
+  config.script :attack do
+    %q{%{
+      wget https://mirrors.tuna.tsinghua.edu.cn/ubuntu/pool/universe/f/fonts-adf/fonts-adf-accanthis_0.20110505-1_all.deb
+      sudo dpkg -i fonts-adf-accanthis_0.20110505-1_all.deb
+      rm fonts-adf-accanthis_0.20110505-1_all.deb
+      sleep 5
+      wget https://mirrors.tuna.tsinghua.edu.cn/ubuntu/pool/main/j/java-common/java-common_0.63ubuntu1~02_all.deb
+      sudo dpkg -i java-common_0.63ubuntu1~02_all.deb
+      rm java-common_0.63ubuntu1~02_all.deb
+      sleep 8
+      wget https://mirrors.tuna.tsinghua.edu.cn/ubuntu/pool/universe/a/arc/arc_5.21q-5_amd64.deb
+      sudo dpkg -i arc_5.21q-5_amd64.deb
+      rm arc_5.21q-5_amd64.deb
+      sleep 3
+      wget https://mirrors.tuna.tsinghua.edu.cn/ubuntu/pool/universe/s/sx/sx_2.0+ds-4build2_amd64.deb
+      sudo dpkg -i sx_2.0+ds-4build2_amd64.deb
+      rm sx_2.0+ds-4build2_amd64.deb
+      sleep 12
+      wget https://mirrors.tuna.tsinghua.edu.cn/ubuntu/pool/universe/e/edb/edb_1.31-3_all.deb
+      sudo dpkg -i edb_1.31-3_all.deb
+      rm edb_1.31-3_all.deb
+      sleep 7
+      wget https://mirrors.tuna.tsinghua.edu.cn/ubuntu/pool/universe/c/carmetal/carmetal_3.5.2+dfsg-1.1_all.deb
+      sudo dpkg -i carmetal_3.5.2+dfsg-1.1_all.deb
+      rm carmetal_3.5.2+dfsg-1.1_all.deb
+      sleep 10
+      wget https://mirrors.tuna.tsinghua.edu.cn/ubuntu/pool/universe/s/spl-linux/spl_0.7.5-1ubuntu2_amd64.deb
+      sudo dpkg -i spl_0.7.5-1ubuntu2_amd64.deb
+      rm spl_0.7.5-1ubuntu2_amd64.deb
+      sleep 7
+      wget https://mirrors.tuna.tsinghua.edu.cn/ubuntu/pool/universe/a/aurora/aurora_1.9.3-0ubuntu1_amd64.deb
+      sudo dpkg -i aurora_1.9.3-0ubuntu1_amd64.deb
+      rm aurora_1.9.3-0ubuntu1_amd64.deb
+      sleep 1
+      wget https://mirrors.tuna.tsinghua.edu.cn/ubuntu/pool/universe/j/jzmq/libzmq-java_3.1.0-10_amd64.deb
+      sudo dpkg -i libzmq-java_3.1.0-10_amd64.deb
+      rm libzmq-java_3.1.0-10_amd64.deb
+      sleep 6
+      wget 192.168.33.3/ipscan_3.5.5_amd64.deb
+      sudo dpkg -i ipscan_3.5.5_amd64.deb
+      rm ipscan_3.5.5_amd64.deb
+      sleep 4
+      wget https://mirrors.tuna.tsinghua.edu.cn/ubuntu/pool/universe/x/xmlto/xmlto_0.0.28-2_amd64.deb
+      sudo dpkg -i xmlto_0.0.28-2_amd64.deb
+      rm xmlto_0.0.28-2_amd64.deb
+      sleep 16
+      wget https://mirrors.tuna.tsinghua.edu.cn/ubuntu/pool/universe/p/plexus-languages/libplexus-languages-java_0.9.5-2_all.deb
+      sudo dpkg -i libplexus-languages-java_0.9.5-2_all.deb
+      rm libplexus-languages-java_0.9.5-2_all.deb
+      sleep 1
+      wget https://mirrors.tuna.tsinghua.edu.cn/ubuntu/pool/universe/z/zathura-pdf-poppler/zathura-pdf-poppler_0.2.8-1_amd64.deb
+      sudo dpkg -i zathura-pdf-poppler_0.2.8-1_amd64.deb
+      rm zathura-pdf-poppler_0.2.8-1_amd64.deb
+      sleep 7
+      wget https://mirrors.tuna.tsinghua.edu.cn/ubuntu/pool/universe/f/fasd/fasd_1.0.1-1_all.deb
+      sudo dpkg -i fasd_1.0.1-1_all.deb
+      rm fasd_1.0.1-1_all.deb
+      sleep 7
+    }}
+  end
+
+  config.script :camflow_stop do
+    Xanthus::CAMFLOW_STOP
+  end
+
+  config.script :post do
+    %q{%{
+      sleep 10
+      cd ..
+      rm -rf wgets
+    }}
+  end
+
+  config.script :server do
+    %q{%{
+      sudo ufw disable
+
+      sudo tee /etc/apt/sources.list <<-'EOF'
+      deb http://mirrors.aliyun.com/ubuntu/ bionic main restricted universe multiverse
+      deb-src http://mirrors.aliyun.com/ubuntu/ bionic main restricted universe multiverse
+      deb http://mirrors.aliyun.com/ubuntu/ bionic-security main restricted universe multiverse
+      deb-src http://mirrors.aliyun.com/ubuntu/ bionic-security main restricted universe multiverse
+      deb http://mirrors.aliyun.com/ubuntu/ bionic-updates main restricted universe multiverse
+      deb-src http://mirrors.aliyun.com/ubuntu/ bionic-updates main restricted universe multiverse
+      deb http://mirrors.aliyun.com/ubuntu/ bionic-backports main restricted universe multiverse
+      deb-src http://mirrors.aliyun.com/ubuntu/ bionic-backports main restricted universe multiverse
+      deb http://mirrors.aliyun.com/ubuntu/ bionic-proposed main restricted universe multiverse
+      deb-src http://mirrors.aliyun.com/ubuntu/ bionic-proposed main restricted universe multiverse
+      EOF
+
+      sudo apt-get -y update
+      sudo apt-get -y install build-essential
+      sudo DEBIAN_FRONTEND=noninteractive apt-get -y install python-pip python-dev
+      sudo pip install pyftpdlib
+
+      mkdir /tmp/ftptest
+      cd /tmp/ftptest
+      cp /vagrant/ipscan_3.5.5_amd64.deb /tmp/ftptest
+      sudo python -m pyftpdlib -p21 -w &
+      sleep 5
+      mkdir /tmp/webtest
+      cd /tmp/webtest
+      wget https://gitee.com/sunwenzaizhi/ipscan/attach_files/585071/download/ipscan_3.5.5_amd64.deb
+      cp /vagrant/wget-exploit3.py /tmp/webtest
+      sudo python3 /tmp/webtest/wget-exploit3.py > /tmp/wget.txt &
+    }}
+  end
+
+  config.vm :camflow do |vm|
+    vm.box = "YilunSun/provstap-w3c-headless"
+    vm.version = "0.0.4"
+    vm.ip = '192.168.33.8'
+  end
+
+  config.vm :server do |vm|
+    vm.box = 'bento/ubuntu-18.04'
+    vm.version = '201812.27.0'
+    vm.ip = '192.168.33.3'
+  end
+
+  config.job :normal_camflow do |job|
+    # job.iterations = 125
+    job.iterations = 1
+    job.tasks = { camflow: [:pre, :camflow_start, :normal, :camflow_stop, :post] }
+    job.outputs = {
+      camflow: { config: '/etc/camflow.ini', camflow: '/tmp/audit.log', stap: '/tmp/stap.log' }
+    }
+  end
+
+  config.job :attack_camflow do |job|
+    job.iterations = 25
+    job.tasks = { server: [:server], camflow: [:pre, :camflow_start, :attack, :camflow_stop, :post] }
+    job.inputs = { server: ['ipscan_3.5.5_amd64.deb', 'wget-exploit3.py'] }
+    job.outputs = {
+      server: { trace: '/tmp/wget.txt' },
+      camflow: { config: '/etc/camflow.ini', camflow: '/tmp/audit.log', stap: '/tmp/stap.log' }
+    }
+  end
+end

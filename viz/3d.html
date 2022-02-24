@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>3D</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.2.2/dist/echarts.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts-gl@2.0.8/dist/echarts-gl.min.js"></script>
+</head>
+<body>
+<div id="main" style="width: 768px; height: 1024px; margin: 0 auto"></div>
+<script>
+    // [float(x), float(y), float(z), 'normal'|'attack'][]
+    const data = [];
+
+    const chartDom = document.getElementById('main');
+    const myChart = echarts.init(chartDom);
+    const symbolSize = 2.5;
+    option = {
+        grid3D: {},
+        xAxis3D: {
+            type: 'category'
+        },
+        yAxis3D: {},
+        zAxis3D: {},
+        visualMap: {
+            type: 'piecewise',
+            categories: ['normal', 'attack'],
+            inRange: {
+                color: {
+                    'normal': '#0000FF',
+                    'attack': '#FF0000'
+                }
+            }
+        },
+        dataset: {
+            dimensions: [
+                'x', 'y', 'z', 'c'
+            ],
+            source: data
+        },
+        series: [
+            {
+                type: 'scatter3D',
+                symbolSize: symbolSize
+            }
+        ]
+    };
+    myChart.setOption(option);
+</script>
+</body>
+</html>
